@@ -1,0 +1,504 @@
+{
+  "generated_at": "2026-04-30T00:00:00",
+  "overview": {
+    "sessions": 124,
+    "iterations": 348,
+    "verified": 91,
+    "unverified": 18,
+    "risky": 12,
+    "recovered": 27,
+    "quality_score": 82,
+    "cost_usd": 42.86,
+    "cost_eur": 39.43,
+    "cost_pln": 166.72,
+    "cost_per_session_usd": 0.35,
+    "cost_per_iteration_usd": 0.12,
+    "cost_estimated": true
+  },
+  "insights": [
+    {
+      "level": "good",
+      "title": "Workflow quality is strong",
+      "body": "Most sessions show verification or controlled recovery patterns."
+    },
+    {
+      "level": "info",
+      "title": "Cost is estimated",
+      "body": "This static demo uses representative local workflow data for public preview."
+    },
+    {
+      "level": "risk",
+      "title": "Unverified changes detected",
+      "body": "18 sessions appear to end after edits without a later verification step."
+    },
+    {
+      "level": "info",
+      "title": "Most expensive session",
+      "body": "agentops-control-hub used about $3.62 with 14 iterations."
+    }
+  ],
+  "project_options": [
+    "agentops-control-hub",
+    "ai-workflow-observatory",
+    "agent-control-plane",
+    "danex-rag-service",
+    "mcp-security-gateway"
+  ],
+  "activity": {
+    "exploration": 176,
+    "planning": 94,
+    "implementation": 211,
+    "verification": 143,
+    "debugging": 48,
+    "handoff": 93
+  },
+  "projects": [
+    {
+      "project": "agentops-control-hub",
+      "sessions": 28,
+      "iterations": 96,
+      "verified": 24,
+      "risk": "low",
+      "cost_usd": 12.84,
+      "cost_eur": 11.81,
+      "cost_pln": 49.95,
+      "quality_score": 88
+    },
+    {
+      "project": "ai-workflow-observatory",
+      "sessions": 24,
+      "iterations": 72,
+      "verified": 19,
+      "risk": "low",
+      "cost_usd": 8.42,
+      "cost_eur": 7.75,
+      "cost_pln": 32.75,
+      "quality_score": 84
+    },
+    {
+      "project": "agent-control-plane",
+      "sessions": 21,
+      "iterations": 63,
+      "verified": 15,
+      "risk": "medium",
+      "cost_usd": 7.91,
+      "cost_eur": 7.28,
+      "cost_pln": 30.76,
+      "quality_score": 76
+    },
+    {
+      "project": "danex-rag-service",
+      "sessions": 18,
+      "iterations": 49,
+      "verified": 14,
+      "risk": "low",
+      "cost_usd": 5.68,
+      "cost_eur": 5.23,
+      "cost_pln": 22.09,
+      "quality_score": 81
+    },
+    {
+      "project": "mcp-security-gateway",
+      "sessions": 15,
+      "iterations": 38,
+      "verified": 11,
+      "risk": "medium",
+      "cost_usd": 4.72,
+      "cost_eur": 4.34,
+      "cost_pln": 18.36,
+      "quality_score": 73
+    }
+  ],
+  "sessions": [
+    {
+      "session_id": "9f3ab7e0",
+      "project": "agentops-control-hub",
+      "started_at": "2026-04-24T10:24:31",
+      "pattern": "code-change-with-test",
+      "iterations": 14,
+      "verification_quality": "good",
+      "risk": "low",
+      "cost": {
+        "usd": 3.62,
+        "eur": 3.3304,
+        "pln": 14.0818,
+        "input_tokens": 98200,
+        "output_tokens": 21400,
+        "total_tokens": 119600,
+        "token_estimate": true
+      },
+      "phases": [
+        {
+          "phase": "exploration",
+          "title": "Context gathering",
+          "event_count": 18,
+          "evidence": [
+            "read files",
+            "searched routes",
+            "checked package setup"
+          ]
+        },
+        {
+          "phase": "planning",
+          "title": "Implementation plan",
+          "event_count": 6,
+          "evidence": [
+            "scoped UI states",
+            "identified data flow"
+          ]
+        },
+        {
+          "phase": "implementation",
+          "title": "Code changes",
+          "event_count": 24,
+          "evidence": [
+            "patched components",
+            "updated styles"
+          ]
+        },
+        {
+          "phase": "verification",
+          "title": "Build verification",
+          "event_count": 9,
+          "evidence": [
+            "npm run build",
+            "playwright smoke test"
+          ]
+        },
+        {
+          "phase": "handoff",
+          "title": "Final handoff",
+          "event_count": 3,
+          "evidence": [
+            "summarized changes",
+            "reported checks"
+          ]
+        }
+      ]
+    },
+    {
+      "session_id": "a17b9e45",
+      "project": "ai-workflow-observatory",
+      "started_at": "2026-04-25T11:24:31",
+      "pattern": "debugging-loop-with-recovery",
+      "iterations": 11,
+      "verification_quality": "recovered",
+      "risk": "low",
+      "cost": {
+        "usd": 2.84,
+        "eur": 2.6128,
+        "pln": 11.0476,
+        "input_tokens": 77400,
+        "output_tokens": 18600,
+        "total_tokens": 96000,
+        "token_estimate": true
+      },
+      "phases": [
+        {
+          "phase": "exploration",
+          "title": "Log inspection",
+          "event_count": 14,
+          "evidence": [
+            "loaded session files",
+            "checked parser model"
+          ]
+        },
+        {
+          "phase": "implementation",
+          "title": "Parser update",
+          "event_count": 17,
+          "evidence": [
+            "classified phases",
+            "added cost fields"
+          ]
+        },
+        {
+          "phase": "debugging",
+          "title": "Failure recovery",
+          "event_count": 7,
+          "evidence": [
+            "fixed failing test",
+            "adjusted edge case"
+          ]
+        },
+        {
+          "phase": "verification",
+          "title": "Regression check",
+          "event_count": 11,
+          "evidence": [
+            "pytest",
+            "manual dashboard check"
+          ]
+        },
+        {
+          "phase": "handoff",
+          "title": "Review notes",
+          "event_count": 2,
+          "evidence": [
+            "documented behavior"
+          ]
+        }
+      ]
+    },
+    {
+      "session_id": "3c6e8ff2",
+      "project": "agent-control-plane",
+      "started_at": "2026-04-26T12:24:31",
+      "pattern": "code-change-with-test",
+      "iterations": 9,
+      "verification_quality": "good",
+      "risk": "medium",
+      "cost": {
+        "usd": 2.11,
+        "eur": 1.9412,
+        "pln": 8.2079,
+        "input_tokens": 61200,
+        "output_tokens": 14100,
+        "total_tokens": 75300,
+        "token_estimate": true
+      },
+      "phases": [
+        {
+          "phase": "exploration",
+          "title": "Context gathering",
+          "event_count": 18,
+          "evidence": [
+            "read files",
+            "searched routes",
+            "checked package setup"
+          ]
+        },
+        {
+          "phase": "planning",
+          "title": "Implementation plan",
+          "event_count": 6,
+          "evidence": [
+            "scoped UI states",
+            "identified data flow"
+          ]
+        },
+        {
+          "phase": "implementation",
+          "title": "Code changes",
+          "event_count": 24,
+          "evidence": [
+            "patched components",
+            "updated styles"
+          ]
+        },
+        {
+          "phase": "verification",
+          "title": "Build verification",
+          "event_count": 9,
+          "evidence": [
+            "npm run build",
+            "playwright smoke test"
+          ]
+        },
+        {
+          "phase": "handoff",
+          "title": "Final handoff",
+          "event_count": 3,
+          "evidence": [
+            "summarized changes",
+            "reported checks"
+          ]
+        }
+      ]
+    },
+    {
+      "session_id": "b0e45c90",
+      "project": "danex-rag-service",
+      "started_at": "2026-04-27T13:24:31",
+      "pattern": "exploration-or-conversation",
+      "iterations": 5,
+      "verification_quality": "read-only",
+      "risk": "low",
+      "cost": {
+        "usd": 1.36,
+        "eur": 1.2512,
+        "pln": 5.2904,
+        "input_tokens": 41200,
+        "output_tokens": 9300,
+        "total_tokens": 50500,
+        "token_estimate": true
+      },
+      "phases": [
+        {
+          "phase": "exploration",
+          "title": "Log inspection",
+          "event_count": 14,
+          "evidence": [
+            "loaded session files",
+            "checked parser model"
+          ]
+        },
+        {
+          "phase": "implementation",
+          "title": "Parser update",
+          "event_count": 17,
+          "evidence": [
+            "classified phases",
+            "added cost fields"
+          ]
+        },
+        {
+          "phase": "debugging",
+          "title": "Failure recovery",
+          "event_count": 7,
+          "evidence": [
+            "fixed failing test",
+            "adjusted edge case"
+          ]
+        },
+        {
+          "phase": "verification",
+          "title": "Regression check",
+          "event_count": 11,
+          "evidence": [
+            "pytest",
+            "manual dashboard check"
+          ]
+        },
+        {
+          "phase": "handoff",
+          "title": "Review notes",
+          "event_count": 2,
+          "evidence": [
+            "documented behavior"
+          ]
+        }
+      ]
+    },
+    {
+      "session_id": "7b1cd233",
+      "project": "mcp-security-gateway",
+      "started_at": "2026-04-28T14:24:31",
+      "pattern": "code-change-without-test",
+      "iterations": 8,
+      "verification_quality": "weak",
+      "risk": "medium",
+      "cost": {
+        "usd": 1.74,
+        "eur": 1.6008,
+        "pln": 6.7686,
+        "input_tokens": 52800,
+        "output_tokens": 10700,
+        "total_tokens": 63500,
+        "token_estimate": true
+      },
+      "phases": [
+        {
+          "phase": "exploration",
+          "title": "Context gathering",
+          "event_count": 18,
+          "evidence": [
+            "read files",
+            "searched routes",
+            "checked package setup"
+          ]
+        },
+        {
+          "phase": "planning",
+          "title": "Implementation plan",
+          "event_count": 6,
+          "evidence": [
+            "scoped UI states",
+            "identified data flow"
+          ]
+        },
+        {
+          "phase": "implementation",
+          "title": "Code changes",
+          "event_count": 24,
+          "evidence": [
+            "patched components",
+            "updated styles"
+          ]
+        },
+        {
+          "phase": "verification",
+          "title": "Build verification",
+          "event_count": 9,
+          "evidence": [
+            "npm run build",
+            "playwright smoke test"
+          ]
+        },
+        {
+          "phase": "handoff",
+          "title": "Final handoff",
+          "event_count": 3,
+          "evidence": [
+            "summarized changes",
+            "reported checks"
+          ]
+        }
+      ]
+    },
+    {
+      "session_id": "f2a44101",
+      "project": "agent-regression-lab",
+      "started_at": "2026-04-29T15:24:31",
+      "pattern": "debugging-loop-with-recovery",
+      "iterations": 7,
+      "verification_quality": "recovered",
+      "risk": "low",
+      "cost": {
+        "usd": 1.52,
+        "eur": 1.3984,
+        "pln": 5.9128,
+        "input_tokens": 46800,
+        "output_tokens": 9700,
+        "total_tokens": 56500,
+        "token_estimate": true
+      },
+      "phases": [
+        {
+          "phase": "exploration",
+          "title": "Log inspection",
+          "event_count": 14,
+          "evidence": [
+            "loaded session files",
+            "checked parser model"
+          ]
+        },
+        {
+          "phase": "implementation",
+          "title": "Parser update",
+          "event_count": 17,
+          "evidence": [
+            "classified phases",
+            "added cost fields"
+          ]
+        },
+        {
+          "phase": "debugging",
+          "title": "Failure recovery",
+          "event_count": 7,
+          "evidence": [
+            "fixed failing test",
+            "adjusted edge case"
+          ]
+        },
+        {
+          "phase": "verification",
+          "title": "Regression check",
+          "event_count": 11,
+          "evidence": [
+            "pytest",
+            "manual dashboard check"
+          ]
+        },
+        {
+          "phase": "handoff",
+          "title": "Review notes",
+          "event_count": 2,
+          "evidence": [
+            "documented behavior"
+          ]
+        }
+      ]
+    }
+  ]
+}
