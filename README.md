@@ -13,6 +13,8 @@ AI Workflow Observatory scans local Codex session logs and reconstructs the engi
 
 The goal is not only to count tokens or sessions. The goal is to understand how the workflow behaved.
 
+[Live demo](https://danieloza.github.io/ai-workflow-observatory/)
+
 ![AI Workflow Observatory dashboard](docs/assets/dashboard.png)
 
 ## Product Thesis
