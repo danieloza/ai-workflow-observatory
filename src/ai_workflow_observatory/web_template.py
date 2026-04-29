@@ -1,0 +1,495 @@
+HTML = """
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Workflow Observatory</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #020813;
+      --panel: rgba(8, 22, 38, .82);
+      --line: rgba(113, 178, 255, .22);
+      --text: #f4f8ff;
+      --muted: #a8b6cb;
+      --cyan: #21dff2;
+      --blue: #3a8cff;
+      --green: #00e58a;
+      --purple: #8b4dff;
+      --pink: #da4dff;
+      --yellow: #ffd166;
+      --red: #ff5d75;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .44);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 16% 12%, rgba(29, 223, 242, .12), transparent 28%),
+        radial-gradient(circle at 78% 22%, rgba(139, 77, 255, .18), transparent 34%),
+        radial-gradient(circle at 52% 88%, rgba(0, 229, 138, .07), transparent 28%),
+        linear-gradient(135deg, #020813 0%, #04172a 48%, #030711 100%);
+      color: var(--text);
+      font: 14px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .38;
+      background-image:
+        linear-gradient(rgba(64, 156, 255, .06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(64, 156, 255, .06) 1px, transparent 1px);
+      background-size: 52px 52px;
+      mask-image: radial-gradient(circle at 50% 20%, black, transparent 72%);
+      z-index: 0;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    .page-shell { width: min(1420px, calc(100% - 36px)); margin: 0 auto; position: relative; z-index: 1; }
+    .topbar {
+      position: sticky;
+      top: 12px;
+      z-index: 30;
+      margin-top: 12px;
+      border: 1px solid rgba(92, 210, 255, .28);
+      border-radius: 12px;
+      background: rgba(2, 13, 25, .82);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 16px 56px rgba(0, 0, 0, .38), inset 0 1px 0 rgba(255, 255, 255, .05);
+    }
+    .topbar-inner { height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 0 18px; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; font-weight: 850; font-size: 20px; white-space: nowrap; }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      position: relative;
+      background: radial-gradient(circle at 50% 50%, #071526 32%, transparent 34%), conic-gradient(from 28deg, var(--cyan), var(--purple), var(--green), var(--cyan));
+      box-shadow: 0 0 28px rgba(33, 223, 242, .56);
+    }
+    .brand-mark::before, .brand-mark::after {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border: 2px solid rgba(33, 223, 242, .92);
+      border-left-color: transparent;
+      border-radius: 50%;
+    }
+    .brand-mark::after { inset: 14px; border-color: rgba(218, 77, 255, .9); border-right-color: transparent; }
+    .nav { display: flex; gap: 28px; color: #dbe7f7; font-size: 13px; align-items: center; }
+    .nav a:hover { color: var(--cyan); }
+    .btn {
+      border: 1px solid rgba(123, 205, 255, .25);
+      color: var(--text);
+      background: rgba(7, 20, 36, .76);
+      border-radius: 9px;
+      padding: 10px 16px;
+      min-height: 40px;
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 760;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+    }
+    .btn.primary {
+      border-color: rgba(56, 233, 255, .68);
+      background: linear-gradient(135deg, #14d7ed, #793fff);
+      box-shadow: 0 0 30px rgba(33, 223, 242, .28), inset 0 1px 0 rgba(255,255,255,.24);
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .hero { display: grid; grid-template-columns: minmax(300px, .82fr) minmax(420px, 1.18fr); gap: 28px; align-items: center; padding: 58px 42px 30px; min-height: 610px; }
+    .hero-copy { max-width: 620px; }
+    .trust-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #72ffe3;
+      border: 1px solid rgba(33, 223, 242, .32);
+      background: rgba(4, 27, 42, .74);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 820;
+      margin-bottom: 20px;
+      box-shadow: 0 0 24px rgba(33, 223, 242, .12);
+    }
+    h1 { margin: 0; font-size: clamp(36px, 4.8vw, 68px); line-height: .98; letter-spacing: -1px; font-weight: 900; }
+    .gradient-text { color: #6ff7ff; text-shadow: 0 0 26px rgba(33, 223, 242, .22); }
+    .hero-lede { margin: 20px 0 0; color: #c4cfdf; font-size: 18px; line-height: 1.55; max-width: 570px; }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 28px; }
+    .glyph {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      display: inline-grid;
+      place-items: center;
+      color: var(--cyan);
+      background: rgba(33, 223, 242, .1);
+      border: 1px solid rgba(33, 223, 242, .2);
+      flex: 0 0 auto;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .tech-strip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 28px; padding: 10px; border: 1px solid rgba(113, 178, 255, .18); border-radius: 12px; background: rgba(7, 22, 39, .78); }
+    .tech-item { display: flex; align-items: center; gap: 8px; color: #dce8f8; font-size: 12px; font-weight: 740; white-space: nowrap; }
+    .product-window {
+      border: 1px solid rgba(113, 178, 255, .28);
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(8, 24, 42, .96), rgba(4, 13, 26, .96));
+      box-shadow: var(--shadow), 0 0 80px rgba(33, 223, 242, .1);
+      overflow: hidden;
+      transform: perspective(1100px) rotateY(-4deg) rotateX(1deg);
+    }
+    .window-bar { height: 42px; display: flex; align-items: center; gap: 10px; padding: 0 16px; border-bottom: 1px solid rgba(113, 178, 255, .16); background: rgba(1, 9, 18, .58); }
+    .dot-red, .dot-yellow, .dot-green { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #28c840; }
+    .window-title { margin-left: 8px; font-size: 12px; font-weight: 760; color: #e8f1ff; }
+    .window-tabs { margin-left: auto; display: flex; gap: 18px; color: #91a2b9; font-size: 11px; }
+    .window-tabs span:first-child { color: var(--cyan); }
+    .preview-body { padding: 14px; }
+    .preview-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .preview-card, .panel, .feature-card, .step-card, .metric-card, .dashboard-card, .cta-band {
+      border: 1px solid rgba(113, 178, 255, .18);
+      background: linear-gradient(145deg, rgba(9, 29, 49, .82), rgba(5, 17, 32, .82));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04);
+    }
+    .preview-card { min-height: 66px; border-radius: 10px; padding: 10px; position: relative; overflow: hidden; }
+    .preview-label { color: #b9c8da; font-size: 10px; font-weight: 760; }
+    .preview-value { margin-top: 6px; font-size: 22px; font-weight: 900; line-height: 1; }
+    .preview-note { margin-top: 4px; color: var(--green); font-size: 10px; font-weight: 760; }
+    .mini-ring { position: absolute; right: 12px; top: 18px; width: 40px; height: 40px; border-radius: 50%; background: conic-gradient(var(--cyan) 78%, rgba(40, 71, 102, .9) 0); box-shadow: 0 0 18px rgba(33, 223, 242, .18); }
+    .workflow-map { margin-top: 12px; border-radius: 12px; padding: 14px 12px; border: 1px solid rgba(113, 178, 255, .16); background: rgba(5, 16, 29, .68); }
+    .map-title { display: flex; justify-content: space-between; color: #dfeaff; font-weight: 800; font-size: 12px; margin-bottom: 14px; }
+    .phase-line { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; align-items: start; position: relative; }
+    .phase-line::before { content: ""; position: absolute; top: 33px; left: 8%; right: 8%; height: 2px; background: linear-gradient(90deg, var(--cyan), var(--green), var(--purple), var(--pink)); opacity: .7; }
+    .phase-node { display: grid; justify-items: center; gap: 7px; position: relative; z-index: 1; text-align: center; }
+    .phase-icon { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; border: 1px solid rgba(33, 223, 242, .5); color: var(--cyan); background: rgba(6, 24, 40, .96); box-shadow: 0 0 28px rgba(33, 223, 242, .18); font-weight: 900; }
+    .phase-node:nth-child(3) .phase-icon, .phase-node:nth-child(4) .phase-icon { color: var(--green); border-color: rgba(0, 229, 138, .5); }
+    .phase-node:nth-child(5) .phase-icon, .phase-node:nth-child(6) .phase-icon { color: var(--purple); border-color: rgba(139, 77, 255, .62); }
+    .phase-name { font-size: 11px; font-weight: 820; }
+    .phase-count { color: #9caec4; font-size: 10px; }
+    .preview-table { margin-top: 12px; border: 1px solid rgba(113, 178, 255, .14); border-radius: 12px; overflow: auto; background: rgba(5, 16, 29, .62); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 9px 10px; border-bottom: 1px solid rgba(113, 178, 255, .13); text-align: left; vertical-align: middle; font-size: 12px; }
+    th { color: #8fa2ba; font-size: 10px; text-transform: uppercase; font-weight: 840; }
+    tr:last-child td { border-bottom: 0; }
+    tr.clickable { cursor: pointer; }
+    tr.clickable:hover, tr.selected { background: rgba(33, 223, 242, .07); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .section-title { margin: 22px auto 18px; text-align: center; font-size: clamp(24px, 3vw, 32px); line-height: 1.15; font-weight: 880; }
+    .metric-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 8px 46px 22px; }
+    .metric-card { border-radius: 15px; min-height: 118px; padding: 20px; display: grid; grid-template-columns: 54px 1fr; gap: 16px; align-items: center; }
+    .metric-icon { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; color: var(--cyan); border: 1px solid rgba(33, 223, 242, .42); background: rgba(33, 223, 242, .08); box-shadow: 0 0 26px rgba(33, 223, 242, .22); font-weight: 900; }
+    .metric-label { color: #d8e5f6; font-size: 13px; }
+    .metric-value { font-size: 31px; line-height: 1.05; font-weight: 900; margin-top: 2px; }
+    .metric-note { color: var(--green); font-size: 12px; margin-top: 5px; font-weight: 760; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 0 46px 26px; }
+    .feature-card { min-height: 112px; border-radius: 14px; padding: 20px; display: grid; grid-template-columns: 54px 1fr; gap: 16px; align-items: center; }
+    .feature-title { font-weight: 860; font-size: 17px; }
+    .feature-copy { color: #aebbd0; font-size: 13px; margin-top: 4px; }
+    .steps { display: grid; grid-template-columns: 1fr 46px 1fr 46px 1fr; gap: 10px; align-items: center; margin: 0 46px 20px; }
+    .step-card { border-radius: 14px; padding: 22px; min-height: 108px; display: grid; grid-template-columns: 46px 1fr; gap: 16px; align-items: center; }
+    .step-number { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; border: 1px solid rgba(33, 223, 242, .64); color: #7ff7ff; font-weight: 900; font-size: 20px; box-shadow: 0 0 18px rgba(33, 223, 242, .2); }
+    .step-arrow { color: var(--cyan); font-size: 28px; text-align: center; opacity: .76; }
+    .dashboard-section { margin: 18px 46px 18px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(330px, .7fr); gap: 18px; align-items: stretch; }
+    .dashboard-card { border-radius: 18px; overflow: hidden; min-width: 0; }
+    .dashboard-chrome { min-height: 42px; display: flex; align-items: center; gap: 12px; padding: 0 16px; border-bottom: 1px solid rgba(113, 178, 255, .15); background: rgba(2, 12, 23, .72); }
+    .dashboard-body { padding: 16px; }
+    .controls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: 10px; align-items: center; margin-bottom: 14px; }
+    input, select { min-width: 0; border: 1px solid rgba(113, 178, 255, .2); border-radius: 9px; background: rgba(3, 14, 26, .86); color: var(--text); padding: 10px 11px; outline: none; font-size: 12px; }
+    input:focus, select:focus { border-color: rgba(33, 223, 242, .7); box-shadow: 0 0 0 3px rgba(33, 223, 242, .08); }
+    .score-card { display: grid; grid-template-columns: 148px 1fr; gap: 18px; align-items: center; padding: 18px; border: 1px solid rgba(113, 178, 255, .16); border-radius: 14px; background: rgba(4, 17, 31, .64); margin-bottom: 14px; }
+    .score-ring { width: 132px; height: 132px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--green) calc(var(--score) * 1%), rgba(32, 61, 88, .8) 0); position: relative; box-shadow: 0 0 32px rgba(0, 229, 138, .18); }
+    .score-ring::after { content: ""; position: absolute; inset: 12px; border-radius: 50%; background: #05111f; border: 1px solid rgba(113, 178, 255, .16); }
+    .score-value { position: relative; z-index: 1; font-size: 34px; font-weight: 900; }
+    .score-label { color: var(--cyan); text-transform: uppercase; font-size: 11px; font-weight: 840; }
+    .score-tone { font-size: 30px; font-weight: 900; margin: 2px 0 4px; }
+    .muted { color: var(--muted); }
+    .mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+    .mini-stat { border: 1px solid rgba(113, 178, 255, .14); border-radius: 10px; padding: 10px; background: rgba(2, 12, 23, .58); }
+    .mini-stat div:first-child { color: #8fa2ba; text-transform: uppercase; font-size: 10px; font-weight: 850; }
+    .mini-stat div:last-child { margin-top: 4px; font-size: 15px; font-weight: 880; }
+    .insights { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+    .insight { border: 1px solid rgba(113, 178, 255, .16); border-radius: 12px; padding: 13px; background: rgba(4, 17, 31, .64); }
+    .insight.good { border-color: rgba(0, 229, 138, .36); }
+    .insight.warn { border-color: rgba(255, 209, 102, .38); }
+    .insight.risk { border-color: rgba(255, 93, 117, .38); }
+    .insight.info { border-color: rgba(33, 223, 242, .34); }
+    .insight-title { font-weight: 860; }
+    .insight-body { margin-top: 3px; color: var(--muted); font-size: 12px; }
+    .activity-bars { display: grid; gap: 10px; }
+    .bar-row { display: grid; grid-template-columns: 118px 1fr 42px; gap: 10px; align-items: center; }
+    .bar-bg { height: 8px; border-radius: 999px; background: rgba(26, 52, 78, .75); overflow: hidden; }
+    .bar { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--cyan), var(--purple)); }
+    .trace-card { border: 1px solid rgba(113, 178, 255, .16); border-radius: 14px; padding: 14px; background: rgba(4, 17, 31, .64); margin-bottom: 10px; }
+    .trace-top { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .trace-title { font-weight: 880; }
+    .evidence { color: var(--muted); margin-top: 5px; font-size: 12px; }
+    .timeline { display: grid; gap: 10px; margin-top: 10px; }
+    .timeline-item { display: grid; grid-template-columns: 22px 1fr; gap: 9px; }
+    .timeline-rail { display: grid; justify-items: center; }
+    .timeline-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 18px rgba(33, 223, 242, .45); margin-top: 14px; }
+    .timeline-line { width: 1px; min-height: 48px; background: rgba(113, 178, 255, .18); }
+    .badge { border: 1px solid rgba(113, 178, 255, .22); border-radius: 999px; padding: 3px 8px; display: inline-flex; align-items: center; font-size: 11px; font-weight: 820; background: rgba(3, 14, 26, .75); white-space: nowrap; }
+    .badge.low, .badge.good, .badge.recovered { color: var(--green); border-color: rgba(0,229,138,.36); }
+    .badge.medium, .badge.mixed, .badge.weak { color: var(--yellow); border-color: rgba(255,209,102,.38); }
+    .badge.high { color: var(--red); border-color: rgba(255,93,117,.4); }
+    .badge.read-only { color: var(--cyan); border-color: rgba(33,223,242,.35); }
+    .cta-band { margin: 18px 46px 28px; border-radius: 18px; padding: 28px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 24px; background: radial-gradient(circle at 12% 40%, rgba(33, 223, 242, .18), transparent 28%), radial-gradient(circle at 88% 50%, rgba(139, 77, 255, .22), transparent 30%), linear-gradient(135deg, rgba(6, 24, 42, .92), rgba(9, 20, 44, .92)); }
+    .cta-title { font-size: 27px; font-weight: 900; }
+    .cta-copy { color: var(--muted); margin-top: 4px; }
+    footer { border-top: 1px solid rgba(113, 178, 255, .14); padding: 34px 46px 24px; display: grid; grid-template-columns: 1.4fr repeat(3, .6fr) 1fr; gap: 34px; color: var(--muted); background: rgba(1, 9, 18, .3); }
+    .footer-title { color: var(--text); font-weight: 860; margin-bottom: 8px; }
+    .footer-col { display: grid; gap: 7px; align-content: start; font-size: 13px; }
+    .help-dot { display: inline-grid; place-items: center; width: 16px; height: 16px; border: 1px solid rgba(113, 178, 255, .3); border-radius: 50%; color: var(--muted); font-size: 11px; margin-left: 6px; vertical-align: middle; background: rgba(2, 12, 23, .9); }
+    [data-tip] { cursor: help; }
+    [data-tip]:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+    #tooltip { position: fixed; width: min(310px, 72vw); background: #f6f8fb; color: #111820; border: 1px solid #d8e1ea; border-radius: 10px; padding: 11px 12px; box-shadow: 0 18px 44px rgba(0, 0, 0, .42); font-size: 12px; line-height: 1.35; font-weight: 650; opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity .12s ease, transform .12s ease; z-index: 100; }
+    #tooltip.visible { opacity: 1; transform: translateY(0); }
+    #tooltip.pinned::before { content: "Pinned"; display: block; color: #526170; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+    @media (max-width: 880px) {
+      .hero, .dashboard-section, footer { grid-template-columns: 1fr; }
+      .product-window { transform: none; }
+      .metric-strip, .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .steps { grid-template-columns: 1fr; }
+      .step-arrow { display: none; }
+      .controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .page-shell { width: min(100% - 22px, 1420px); }
+      .topbar-inner { height: auto; padding: 14px; align-items: flex-start; flex-direction: column; }
+      .nav { display: none; }
+      .hero { padding: 46px 8px 26px; grid-template-columns: 1fr; min-height: auto; }
+      .hero-actions { width: 100%; }
+      .btn { flex: 1; }
+      .tech-strip, .preview-metrics, .phase-line, .metric-strip, .feature-grid, .insights, .mini-grid, .controls { grid-template-columns: 1fr; }
+      .phase-line::before { display: none; }
+      .metric-strip, .feature-grid, .steps, .dashboard-section, .cta-band, footer { margin-left: 8px; margin-right: 8px; }
+      .metric-card, .feature-card, .step-card, .score-card, .cta-band { grid-template-columns: 1fr; }
+      .dashboard-section { display: block; }
+      .trace-panel { margin-top: 16px; }
+      th, td { min-width: 96px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="tooltip" role="tooltip"></div>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="#"><span class="brand-mark" aria-hidden="true"></span><span>AI Workflow Observatory</span></a>
+        <nav class="nav" aria-label="Primary">
+          <a href="#product">Product</a>
+          <a href="#sessions-panel">Sessions</a>
+          <a href="https://github.com/danieloza/ai-workflow-observatory" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+        <a class="btn primary" href="#dashboard">Open Demo <span aria-hidden="true">-></span></a>
+      </div>
+    </header>
+    <main>
+      <section class="hero" id="product">
+        <div class="hero-copy">
+          <div class="trust-pill"><span class="glyph">L</span> Local-first by design</div>
+          <h1>Local-first observability for <span class="gradient-text">AI-assisted</span> engineering workflows</h1>
+          <p class="hero-lede">Understand every step your AI workflows take. Trace sessions, score verification, surface risks, and keep everything on your machine.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#dashboard">View Dashboard <span aria-hidden="true">-></span></a>
+            <a class="btn" href="https://github.com/danieloza/ai-workflow-observatory" target="_blank" rel="noreferrer">GitHub Repo</a>
+          </div>
+          <div class="tech-strip">
+            <div class="tech-item"><span class="glyph">OS</span> Open Source</div>
+            <div class="tech-item"><span class="glyph">F</span> FastAPI</div>
+            <div class="tech-item"><span class="glyph">DB</span> SQLite cache</div>
+            <div class="tech-item"><span class="glyph">P</span> Local-first privacy</div>
+          </div>
+        </div>
+        <div class="product-window" aria-label="Product preview">
+          <div class="window-bar">
+            <span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span>
+            <span class="window-title">AI Workflow Observatory</span>
+            <div class="window-tabs"><span>Overview</span><span>Sessions</span><span>Trace</span><span>Risks</span><span>Reports</span></div>
+          </div>
+          <div class="preview-body">
+            <div class="preview-metrics" id="heroPreviewMetrics"></div>
+            <div class="workflow-map">
+              <div class="map-title"><span>Engineering loop</span><span class="muted">workflow phases</span></div>
+              <div class="phase-line" id="heroPhaseLine"></div>
+            </div>
+            <div class="preview-table" id="heroPreviewTable"></div>
+          </div>
+        </div>
+      </section>
+      <section class="metric-strip" id="landingMetrics"></section>
+      <h2 class="section-title">Everything you need to understand your workflows</h2>
+      <section class="feature-grid">
+        <article class="feature-card" data-tip="Automatically detects engineering phases from local AI session logs."><div class="metric-icon">WF</div><div><div class="feature-title">Workflow phase tracking</div><div class="feature-copy">Automatically detects phases from context gathering to handoff across every session.</div></div></article>
+        <article class="feature-card" data-tip="Highlights whether a session had validation signals such as tests, builds or recovery."><div class="metric-icon">V</div><div><div class="feature-title">Verification quality scoring</div><div class="feature-copy">Scores verification steps to highlight quality and reliability.</div></div></article>
+        <article class="feature-card" data-tip="Flags workflow patterns that deserve review before trusting the output."><div class="metric-icon">R</div><div><div class="feature-title">Risk flags</div><div class="feature-copy">Surfaces risky patterns and failures so you can act with confidence.</div></div></article>
+        <article class="feature-card" data-tip="Click any session to inspect its timeline, phases and evidence."><div class="metric-icon">S</div><div><div class="feature-title">Session trace inspection</div><div class="feature-copy">Drill into any session and explore detailed logs, events, and artifacts.</div></div></article>
+        <article class="feature-card" data-tip="Use exports when you need to share evidence outside the live dashboard."><div class="metric-icon">EX</div><div><div class="feature-title">Markdown and JSON export</div><div class="feature-copy">Export insights and traces for sharing, reporting, or offline analysis.</div></div></article>
+        <article class="feature-card" data-tip="The cache and source logs stay on your local machine."><div class="metric-icon">LK</div><div><div class="feature-title">Local-first privacy</div><div class="feature-copy">All data stays on your machine. No cloud telemetry. Total control.</div></div></article>
+      </section>
+      <h2 class="section-title">How it works</h2>
+      <section class="steps">
+        <article class="step-card"><div class="step-number">1</div><div><div class="feature-title">Scan logs</div><div class="feature-copy">The Observatory parses your workflow logs, events, and artifacts locally.</div></div></article>
+        <div class="step-arrow">--></div>
+        <article class="step-card"><div class="step-number">2</div><div><div class="feature-title">Classify workflow</div><div class="feature-copy">It detects phases, scores verification, and flags risks automatically.</div></div></article>
+        <div class="step-arrow">--></div>
+        <article class="step-card"><div class="step-number">3</div><div><div class="feature-title">Review evidence</div><div class="feature-copy">Explore sessions, traces, and metrics to improve with confidence.</div></div></article>
+      </section>
+      <section class="dashboard-section" id="dashboard">
+        <div class="dashboard-card">
+          <div class="dashboard-chrome"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span><strong>AI Workflow Observatory</strong><span class="muted">Overview</span></div>
+          <div class="dashboard-body">
+            <div class="controls">
+              <select id="project"></select>
+              <select id="risk"><option value="all">All risks</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select>
+              <select id="verification"><option value="all">All verification</option><option value="good">Good</option><option value="recovered">Recovered</option><option value="mixed">Mixed</option><option value="weak">Weak</option><option value="read-only">Read-only</option></select>
+              <input id="limit" type="number" min="1" max="200" value="25" aria-label="Sessions limit" />
+              <button class="btn primary" onclick="loadData()">Refresh</button>
+            </div>
+            <div id="score"></div>
+            <div id="insights"></div>
+            <div id="projects"></div>
+            <div id="sessions-panel"></div>
+          </div>
+        </div>
+        <aside class="dashboard-card trace-panel">
+          <div class="dashboard-chrome"><strong>Session inspector</strong><span class="muted">workflow evidence</span></div>
+          <div class="dashboard-body"><div id="activity" class="activity-bars"></div><div id="trace" style="margin-top:16px"></div></div>
+        </aside>
+      </section>
+      <section class="cta-band">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div><div class="cta-title">Explore the Observatory</div><div class="cta-copy">Open the local demo and start understanding your AI workflows today.</div></div>
+        <div class="hero-actions" style="margin:0"><a class="btn primary" href="#dashboard">Open Demo <span aria-hidden="true">-></span></a><a class="btn" href="https://github.com/danieloza/ai-workflow-observatory" target="_blank" rel="noreferrer">GitHub Repo</a></div>
+      </section>
+    </main>
+    <footer>
+      <div class="footer-col"><div class="brand"><span class="brand-mark"></span><span>AI Workflow Observatory</span></div><p>Local-first observability for AI-assisted engineering workflows.</p></div>
+      <div class="footer-col"><div class="footer-title">Product</div><a href="#product">Overview</a><a href="#dashboard">Sessions</a><a href="#dashboard">Reports</a></div>
+      <div class="footer-col"><div class="footer-title">Resources</div><a href="https://github.com/danieloza/ai-workflow-observatory" target="_blank" rel="noreferrer">Docs</a><a href="https://github.com/danieloza/ai-workflow-observatory" target="_blank" rel="noreferrer">Changelog</a></div>
+      <div class="footer-col"><div class="footer-title">Community</div><a href="https://github.com/danieloza/ai-workflow-observatory" target="_blank" rel="noreferrer">GitHub</a><a href="https://github.com/danieloza/ai-workflow-observatory/issues" target="_blank" rel="noreferrer">Issues</a></div>
+      <div class="footer-col"><div class="footer-title">Stay in the loop</div><p>Star us on GitHub to stay updated.</p><a class="btn" href="https://github.com/danieloza/ai-workflow-observatory" target="_blank" rel="noreferrer">Star on GitHub</a></div>
+    </footer>
+  </div>
+  <script>
+    let state = { sessions: [] };
+    async function loadData() {
+      const limit = document.getElementById("limit").value || 25;
+      const project = document.getElementById("project").value || "all";
+      const risk = document.getElementById("risk").value || "all";
+      const verification = document.getElementById("verification").value || "all";
+      const response = await fetch(`/api/summary?limit=${limit}&project=${encodeURIComponent(project)}&risk=${risk}&verification=${verification}`);
+      const data = await response.json();
+      state = data;
+      renderProjectOptions(data.project_options || [], project);
+      renderLanding(data.overview, data.sessions || [], data.activity || {});
+      renderScore(data.overview, data.insights || []);
+      renderProjects(data.projects || []);
+      renderActivity(data.activity || {});
+      renderSessions(data.sessions || []);
+      if (data.sessions && data.sessions.length) selectSession(0);
+      else document.getElementById("trace").innerHTML = `<div class="muted">No sessions match the selected filters.</div>`;
+    }
+    function renderProjectOptions(projects, selected) {
+      const options = [`<option value="all">All projects</option>`].concat(projects.map(project => `<option value="${escapeAttr(project)}">${project}</option>`));
+      const select = document.getElementById("project");
+      select.innerHTML = options.join("");
+      select.value = projects.includes(selected) ? selected : "all";
+    }
+    function renderLanding(overview, sessions, activity) {
+      document.getElementById("heroPreviewMetrics").innerHTML = [["Sessions analyzed", overview.sessions, "+ local cache"], ["Verification score", `${overview.quality_score} /100`, "Good"], ["Risk flags", overview.risky, "review queue"], ["Estimated cost", money(overview.cost_usd, "$"), `PLN ${overview.cost_pln}`]].map(([label, value, note]) => `<div class="preview-card" data-tip="${metricTip(label)}"><div class="preview-label">${label}</div><div class="preview-value">${value}</div><div class="preview-note">${note}</div><div class="mini-ring" aria-hidden="true"></div></div>`).join("");
+      const phases = ["exploration", "planning", "implementation", "verification", "debugging", "handoff"];
+      document.getElementById("heroPhaseLine").innerHTML = phases.map((phase, index) => `<div class="phase-node" data-tip="${activityTip(phase)}"><div class="phase-icon">${index + 1}</div><div class="phase-name">${phaseLabel(phase)}</div><div class="phase-count">${activity[phase] || 0} events</div></div>`).join("");
+      document.getElementById("heroPreviewTable").innerHTML = `<table><thead><tr><th>Session</th><th>Pattern</th><th>Risk</th><th>Verification</th></tr></thead><tbody>${sessions.slice(0, 3).map(session => `<tr><td class="mono">${session.session_id.slice(0, 8)}</td><td>${session.pattern}</td><td>${badge(session.risk)}</td><td>${badge(session.verification_quality)}</td></tr>`).join("")}</tbody></table>`;
+      document.getElementById("landingMetrics").innerHTML = [["Sessions analyzed", overview.sessions, "+ local cache", "SA"], ["Avg. verification score", `${overview.quality_score} /100`, "+ process signal", "VS"], ["Risks detected", overview.risky, "review recommended", "RF"], ["Estimated cost", money(overview.cost_usd, "$"), `EUR ${overview.cost_eur} / PLN ${overview.cost_pln}`, "$"]].map(([label, value, note, icon]) => `<article class="metric-card" data-tip="${metricTip(label)}"><div class="metric-icon">${icon}</div><div><div class="metric-label">${label}</div><div class="metric-value">${value}</div><div class="metric-note">${note}</div></div></article>`).join("");
+    }
+    function renderScore(overview, insights) {
+      const score = overview.quality_score || 0;
+      const tone = score >= 85 ? "strong" : score >= 65 ? "watch" : "risk";
+      document.getElementById("score").innerHTML = `<section class="score-card"><div class="score-ring" style="--score:${score}" data-tip="A management-friendly score for how controlled the AI workflow looks. Higher means more verification, fewer risky endings, and better failure recovery."><div class="score-value">${score}</div></div><div><div class="score-label">Workflow Quality <span class="help-dot" data-tip="This does not judge whether the model was smart. It judges the engineering process around the AI work: context, verification, recovery and risk.">?</span></div><div class="score-tone">${tone}</div><div class="muted">Verification, recovery, risk and handoff quality across the selected sessions.</div><div class="mini-grid"><div class="mini-stat" data-tip="Average estimated AI cost for one work session. Useful for budget and procurement conversations."><div>Cost/session</div><div>${money(overview.cost_per_session_usd, "$")}</div></div><div class="mini-stat" data-tip="Estimated AI cost divided by detected workflow iterations. Helps identify expensive retry loops."><div>Cost/iter</div><div>${money(overview.cost_per_iteration_usd, "$")}</div></div><div class="mini-stat" data-tip="Yes means exact billing tokens were not found in the local logs, so the tool estimates cost from session text volume."><div>Estimated</div><div>${overview.cost_estimated ? "yes" : "no"}</div></div></div></div></section>`;
+      document.getElementById("insights").innerHTML = `<section class="insights">${insights.map(item => `<div class="insight ${item.level}"><div class="insight-title">${item.title}</div><div class="insight-body">${item.body}</div></div>`).join("")}</section>`;
+    }
+    function renderProjects(projects) {
+      document.getElementById("projects").innerHTML = `<div class="preview-table" style="margin-bottom:14px"><table><thead><tr><th data-tip="Project or normalized workspace source detected from local session metadata.">Project</th><th data-tip="How many AI work sessions belong to this project.">Sessions</th><th data-tip="Detected workflow loops such as testing, failures, fixes and repeated attempts.">Iterations</th><th data-tip="Estimated AI usage cost for this project in US dollars.">USD</th><th data-tip="Workflow discipline score for this project.">Quality</th><th data-tip="Sessions with verification signals such as tests, builds or git checks.">Verified</th><th data-tip="Workflow risk based on missing verification or unresolved failures.">Risk</th></tr></thead><tbody>${projects.slice(0, 8).map(p => `<tr><td data-tip="${projectTip(p.project)}">${p.project}</td><td>${p.sessions}</td><td>${p.iterations}</td><td>${money(p.cost_usd, "$")}</td><td data-tip="Higher means more verified and controlled AI workflow behavior.">${p.quality_score}</td><td>${p.verified}</td><td>${badge(p.risk)}</td></tr>`).join("")}</tbody></table></div>`;
+    }
+    function renderActivity(activity) {
+      const entries = Object.entries(activity);
+      const total = entries.reduce((sum, [, value]) => sum + value, 0) || 1;
+      document.getElementById("activity").innerHTML = `<div class="feature-title" style="margin-bottom:10px">Activity breakdown</div>` + entries.map(([name, value]) => { const pct = Math.round((value / total) * 100); return `<div class="bar-row" data-tip="${activityTip(name)}"><div>${phaseLabel(name)}</div><div class="bar-bg"><div class="bar" style="width:${pct}%"></div></div><div>${pct}%</div></div>`; }).join("");
+    }
+    function renderSessions(sessions) {
+      if (!sessions.length) { document.getElementById("sessions-panel").innerHTML = `<div class="muted">No sessions found.</div>`; return; }
+      document.getElementById("sessions-panel").innerHTML = `<div class="preview-table"><table><thead><tr><th data-tip="When the AI session started.">Started</th><th data-tip="Project or normalized source.">Project</th><th data-tip="Short label describing the workflow shape.">Pattern</th><th data-tip="How many workflow loops were detected.">Iter</th><th data-tip="Estimated cost of this session.">USD</th><th data-tip="Whether verification or recovery was detected.">Verify</th><th data-tip="Workflow risk level.">Risk</th></tr></thead><tbody>${sessions.slice(0, 14).map((s, i) => `<tr id="session-row-${i}" class="clickable" onclick="selectSession(${i})"><td class="mono">${s.started_at ? s.started_at.slice(0, 16).replace("T", " ") : "unknown"}</td><td>${s.project}</td><td data-tip="${patternTip(s.pattern)}">${s.pattern}</td><td>${s.iterations}</td><td>${money(s.cost.usd, "$")}</td><td>${badge(s.verification_quality)}</td><td>${badge(s.risk)}</td></tr>`).join("")}</tbody></table></div>`;
+    }
+    function selectSession(index) {
+      const session = state.sessions[index];
+      document.querySelectorAll("tr.selected").forEach(row => row.classList.remove("selected"));
+      const row = document.getElementById(`session-row-${index}`);
+      if (row) row.classList.add("selected");
+      if (!session) return;
+      document.getElementById("trace").innerHTML = `<div class="trace-card" data-tip="Selected session summary: project, risk, cost, tokens and workflow pattern. This is the easiest panel to explain to a manager."><div class="trace-top"><div class="trace-title">${session.project}</div><div>${badge(session.risk)}</div></div><div class="evidence mono">${session.session_id}</div><div class="evidence">Pattern: ${session.pattern}</div><div class="evidence">Iterations: ${session.iterations} | Verification: ${session.verification_quality}</div><div class="evidence">Cost: ${money(session.cost.usd, "$")} / ${money(session.cost.eur, "EUR ")} / ${money(session.cost.pln, "PLN ")}</div><div class="mini-grid"><div class="mini-stat" data-tip="Approximate tokens read by the model."><div>Input</div><div>${session.cost.input_tokens}</div></div><div class="mini-stat" data-tip="Approximate tokens generated by the model."><div>Output</div><div>${session.cost.output_tokens}</div></div><div class="mini-stat" data-tip="Input plus output tokens. Exactness depends on local log metadata."><div>Total</div><div>${session.cost.total_tokens}</div></div></div></div><div class="timeline">${session.phases.map(p => `<div class="timeline-item"><div class="timeline-rail"><div class="timeline-dot"></div><div class="timeline-line"></div></div><div class="trace-card" data-tip="${activityTip(p.phase)}"><div class="trace-top"><div class="trace-title">${p.title}</div><div class="muted">${p.event_count} events</div></div><div class="evidence">${p.evidence.join(", ")}</div></div></div>`).join("")}</div>`;
+    }
+    function badge(value) { return `<span class="badge ${String(value).replaceAll(" ", "-")}" data-tip="${badgeTip(value)}">${value}</span>`; }
+    function escapeAttr(value) { return String(value).replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;"); }
+    function money(value, prefix) { const number = Number(value || 0); return `${prefix}${number.toFixed(number >= 10 ? 0 : 2)}`; }
+    function phaseLabel(name) { return String(name).replaceAll("-", " ").replace(/\\b\\w/g, letter => letter.toUpperCase()); }
+    function metricTip(label) {
+      const tips = { "Sessions": "How many AI-assisted work sessions were analyzed from local logs.", "Sessions analyzed": "How many AI-assisted work sessions were analyzed from local logs.", "Iterations": "Estimated number of engineering loops. High numbers can mean complex work or repeated retries.", "Verified": "Sessions where tests, builds or other validation signals were detected.", "Recovered": "Sessions where a failure was followed by evidence of correction or verification.", "Estimated USD": "Estimated AI usage cost. The same data is also shown in EUR and PLN.", "Estimated cost": "Estimated AI usage cost across the selected local sessions.", "Unverified": "Sessions that appear to end after edits without later validation.", "Risky": "Sessions classified as medium or high workflow risk.", "Risk flags": "Sessions that deserve review before trusting the output.", "Risks detected": "Medium or high risk sessions found in the selected logs.", "Cost / iter": "Estimated cost per detected workflow iteration.", "Verification score": "A combined score for verification, recovery and risk.", "Avg. verification score": "A combined score for verification, recovery and risk." };
+      return tips[label] || "Dashboard metric.";
+    }
+    function activityTip(name) {
+      const tips = { "exploration": "The AI was gathering context by reading files, searching, or inspecting the environment.", "planning": "The AI was organizing the work before execution.", "implementation": "The AI appears to be changing files or applying edits.", "verification": "The workflow includes tests, builds, git checks or similar validation.", "debugging": "The session contains errors, failures or recovery work.", "handoff": "The final explanation or summary at the end of the session.", "other": "Events not yet classified. This should shrink as the parser becomes smarter." };
+      return tips[name] || "Workflow phase detected from local AI session logs.";
+    }
+    function badgeTip(value) {
+      const tips = { "low": "Low workflow risk: no obvious unverified or unresolved behavior was detected.", "medium": "Medium workflow risk: review may be useful before trusting the output.", "high": "High workflow risk: likely missing verification or unresolved failures.", "good": "Good verification: the session contains clear validation signals.", "recovered": "Recovered: the session had a failure and later showed recovery or verification.", "mixed": "Mixed: some verification exists, but there are warning signs.", "weak": "Weak: the session lacks strong verification.", "read-only": "Read-only: mostly inspection or discussion, without clear code-change behavior." };
+      return tips[value] || "Status label.";
+    }
+    function patternTip(pattern) {
+      const tips = { "exploration-or-conversation": "Mostly analysis, discussion or read-only work. Useful for research, but not strong proof of implementation.", "debugging-loop-with-recovery": "The workflow hit a failure and then recovered. This is usually a healthy engineering pattern.", "debugging-loop-unresolved": "The workflow hit a failure and no clear recovery was detected.", "code-change-with-test": "The session appears to include code changes followed by verification.", "code-change-without-test": "The session appears to include code changes without later verification." };
+      return tips[pattern] || "Detected workflow pattern.";
+    }
+    function projectTip(project) {
+      const tips = { "workspace-root": "A session started from the main workspace folder, not one specific repository.", "conversation": "A conversation or handoff-style session, not a real project folder.", "external-system": "A session started from a system folder outside the normal project workspace." };
+      return tips[project] || "A project or repository detected from the local session path.";
+    }
+    const tooltip = document.getElementById("tooltip");
+    let pinnedTooltip = false;
+    document.addEventListener("mouseover", event => { const target = event.target.closest("[data-tip]"); if (pinnedTooltip || !target) return; showTooltip(target, event); });
+    document.addEventListener("focusin", event => { const target = event.target.closest("[data-tip]"); if (!target) return; showTooltip(target, event); });
+    document.addEventListener("mousemove", event => { if (tooltip.classList.contains("visible") && !pinnedTooltip) moveTooltip(event); });
+    document.addEventListener("mouseout", event => { if (!pinnedTooltip && event.target.closest("[data-tip]")) hideTooltip(); });
+    document.addEventListener("focusout", event => { if (!pinnedTooltip && event.target.closest("[data-tip]")) hideTooltip(); });
+    document.addEventListener("click", event => { const target = event.target.closest("[data-tip]"); if (!target) { pinnedTooltip = false; hideTooltip(); return; } pinnedTooltip = true; showTooltip(target, event); tooltip.classList.add("pinned"); event.stopPropagation(); });
+    document.addEventListener("keydown", event => { if (event.key === "Escape") { pinnedTooltip = false; hideTooltip(); } });
+    function showTooltip(target, event) { tooltip.textContent = target.getAttribute("data-tip"); tooltip.classList.add("visible"); if (!pinnedTooltip) tooltip.classList.remove("pinned"); moveTooltip(event); }
+    function hideTooltip() { tooltip.classList.remove("visible", "pinned"); }
+    function moveTooltip(event) {
+      const padding = 14;
+      const width = 310;
+      const rect = event.target && event.target.getBoundingClientRect ? event.target.getBoundingClientRect() : null;
+      const x = event.clientX || (rect ? rect.left + rect.width / 2 : padding);
+      const y = event.clientY || (rect ? rect.bottom : padding);
+      let left = x + 14;
+      let top = y + 14;
+      if (left + width > window.innerWidth - padding) left = x - width - 14;
+      if (top + 110 > window.innerHeight - padding) top = y - 124;
+      tooltip.style.left = `${Math.max(padding, left)}px`;
+      tooltip.style.top = `${Math.max(padding, top)}px`;
+    }
+    loadData();
+  </script>
+</body>
+</html>
+"""
