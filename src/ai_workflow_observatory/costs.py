@@ -3,8 +3,10 @@ from __future__ import annotations
 from .models import CostBreakdown, SessionTrace
 
 
-USD_TO_EUR = 0.93
-USD_TO_PLN = 4.02
+# NBP table A average exchange rates from 2026-04-28:
+# USD/PLN = 3.6293, EUR/PLN = 4.2470, so USD/EUR = 3.6293 / 4.2470.
+USD_TO_EUR = 0.854556
+USD_TO_PLN = 3.6293
 
 # Conservative default rates used when exact model pricing is unknown.
 # Values are USD per 1M tokens.
